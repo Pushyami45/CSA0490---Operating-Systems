@@ -1,0 +1,73 @@
+#include <stdio.h>
+#include <stdlib.h>
+struct DiskBlock {
+    int data;                // Data in the block
+    struct DiskBlock* next;  // Pointer to the next block
+};
+struct File {
+    int fileId;                 // Unique file identifier
+    struct DiskBlock* firstBlock;   // Pointer to the first block of the file
+    struct DiskBlock* lastBlock;    // Pointer to the last block of the file
+};
+struct File* createFile(int fileId) 
+{
+    struct File* newFile = (struct File*)malloc(sizeof(struct File));
+    newFile->fileId = fileId;
+    newFile->firstBlock = NULL;
+    newFile->lastBlock = NULL;
+    return newFile;
+}
+void addBlock(struct File* file, int data)
+{
+    struct DiskBlock* newBlock = (struct DiskBlock*)malloc(sizeof(struct DiskBlock));
+    newBlock->data = data;
+    newBlock->next = NULL;
+    if (file->firstBlock == NULL) 
+    {
+        file->firstBlock = newBlock;
+        file->lastBlock = newBlock;
+    }
+    else 
+    {
+        file->lastBlock->next = newBlock;
+        file->lastBlock = newBlock;
+    }
+}
+void readFile(struct File* file) 
+{
+    struct DiskBlock* currentBlock = file->firstBlock;
+    printf("File %d content: ", file->fileId);
+    while (currentBlock != NULL)
+    {
+        printf("%d ", currentBlock->data);
+        currentBlock = currentBlock->next;
+    }
+    printf("\n");
+}
+void deleteFile(struct File* file) 
+{
+    struct DiskBlock* currentBlock = file->firstBlock;
+    struct DiskBlock* nextBlock;
+    while (currentBlock != NULL) 
+    {
+        nextBlock = currentBlock->next;
+        free(currentBlock);
+        currentBlock = nextBlock;
+    }
+    free(file);
+}
+int main()
+{
+    struct File* file1 = createFile(1);
+    struct File* file2 = createFile(2);
+    addBlock(file1, 10);
+    addBlock(file1, 20);
+    addBlock(file1, 30);
+    addBlock(file2, 40);
+    addBlock(file2, 50);
+    readFile(file1);
+    readFile(file2);
+    deleteFile(file1);
+    deleteFile(file2);
+    return 0;
+}
