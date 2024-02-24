@@ -1,0 +1,64 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX_REQUESTS 100
+int calculateTotalHeadMovement(int requests[], int numRequests, int initialPosition, int direction) {
+    int totalHeadMovement = 0;
+    int currentHeadPosition = initialPosition;
+    for (int i = 0; i < numRequests - 1; i++) 
+    {
+        for (int j = 0; j < numRequests - i - 1; j++)
+        {
+            if (requests[j] > requests[j + 1]) 
+            {
+                int temp = requests[j];
+                requests[j] = requests[j + 1];
+                requests[j + 1] = temp;
+            }
+        }
+    }
+    int initialIndex = 0;
+    for (int i = 0; i < numRequests; i++)
+    {
+        if (requests[i] >= initialPosition) 
+        {
+            initialIndex = i;
+            break;
+        }
+    }
+    if (direction == 1) 
+    {  
+        for (int i = initialIndex; i < numRequests; i++)
+        {
+            totalHeadMovement += abs(currentHeadPosition - requests[i]);
+            currentHeadPosition = requests[i];
+        }
+    } else 
+    {  
+        for (int i = initialIndex; i >= 0; i--) {
+            totalHeadMovement += abs(currentHeadPosition - requests[i]);
+            currentHeadPosition = requests[i];
+        }
+    }
+    return totalHeadMovement;
+}
+int main() 
+{
+    int numRequests;
+    int initialPosition;
+    int requests[MAX_REQUESTS];
+    printf("Enter the number of disk requests: ");
+    scanf("%d", &numRequests);
+    printf("Enter the initial head position: ");
+    scanf("%d", &initialPosition);
+    printf("Enter the disk requests (separated by spaces):\n");
+    for (int i = 0; i < numRequests; i++)
+    {
+        scanf("%d", &requests[i]);
+    }
+    int direction;
+    printf("Enter the direction of scan (1 for higher-numbered tracks, 0 for lower-numbered tracks): ");
+    scanf("%d", &direction);
+    int totalHeadMovement = calculateTotalHeadMovement(requests, numRequests, initialPosition, direction);
+    printf("Total head movement using SCAN: %d\n", totalHeadMovement);
+    return 0;
+}
